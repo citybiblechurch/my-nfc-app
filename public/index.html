@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NFC Tag Management</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { color: #333; }
+    table { width: 100%; border-collapse: collapse; }
+    table, th, td { border: 1px solid black; padding: 8px; text-align: left; }
+    input, button { padding: 10px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h1>NFC Tag Management</h1>
+  
+  <form id="addTagForm">
+    <h3>Add NFC Tag</h3>
+    <input type="text" id="tagId" placeholder="Tag ID" required><br>
+    <input type="date" id="expirationDate" placeholder="Expiration Date"><br>
+    <button type="submit">Add Tag</button>
+  </form>
+
+  <h3>Existing NFC Tags</h3>
+  <table id="tagsTable">
+    <thead>
+      <tr>
+        <th>Tag ID</th>
+        <th>Created At</th>
+        <th>Expiration Date</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <script>
+    // Fetch and display existing tags
+    async function fetchTags() {
+      const response = await fetch('/tags');
+      const tags = await response.json();
+
+      const tableBody = document.querySelector('#tagsTable tbody');
+      tableBody.innerHTML = ''; // Clear the table
+
+      tags.forEach(tag => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${tag.id}</td>
+          <td>${tag.createdAt}</td>
+          <td>${tag.expirationDate || 'N/A'}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Add a new tag
+    document.querySelector('#addTagForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const tagId = document.querySelector('#tagId').value;
+      const expirationDate = document.querySelector('#expirationDate').value;
+
+      const response = await fetch('/tags', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: tagId, expirationDate })
+      });
+
+      if (response.ok) {
+        fetchTags(); // Refresh the tag list
+      } else {
+        alert('Error adding tag');
+      }
+    });
+
+    // Initialize the page with existing tags
+    fetchTags();
+  </script>
+</body>
+</html>

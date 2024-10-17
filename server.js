@@ -2,7 +2,8 @@ const express = require('express');
 const moment = require('moment');
 const sqlite3 = require('sqlite3').verbose();
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000; // This will use Heroku's port or fallback to 3000 for local development
+
 
 // Initialize the SQLite database
 let db = new sqlite3.Database('./nfcTags.db');
@@ -83,3 +84,6 @@ app.get('/tags', (req, res) => {
     });
   });
   
+  app.listen(PORT, () => {
+    console.log(`NFC tag management server running at http://localhost:${PORT}`);
+});

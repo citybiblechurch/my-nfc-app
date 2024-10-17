@@ -15,3 +15,7 @@
     "sqlite3": "^5.1.7"
   }
 }
+
+"scripts": {
+  "start": "node server.js"
+}
